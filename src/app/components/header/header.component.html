@@ -1,0 +1,10 @@
+<mat-toolbar color="primary">
+  <span routerLink="/tasks">Task FE</span>
+  <span class="example-spacer"></span>
+  <button *ngIf="isLoggedIn" mat-button routerLink="/tasks">Tasks</button>
+  <button *ngIf="isLoggedIn" mat-button routerLink="/new-task">Add Task</button>
+  <button *ngIf="isLoggedIn && isAdmin" mat-button routerLink="/new-user">Add User</button>
+  <button *ngIf="!isLoggedIn" mat-button routerLink="/registration">Register</button>
+  <button *ngIf="!isLoggedIn" mat-button routerLink="/login">Login</button>
+  <button *ngIf="isLoggedIn" (click)="logout()" mat-button>Logout</button>
+</mat-toolbar>
