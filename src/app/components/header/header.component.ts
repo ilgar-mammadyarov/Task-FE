@@ -4,23 +4,25 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+  styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit {
   isLoggedIn = false;
   isAdmin = false;
+  isUser = false;
+  currentUser: any;
   constructor(private authService: AuthService) {
-    this.isLoggedIn = this.authService.isLoggedIn();
-    this.isAdmin = this.authService.isAdmin();
+    this.authService.currentUser.subscribe((x) => {
+      this.currentUser = x;
+      if (x === null) return;
+      this.isAdmin = x.role === 'admin' ? true : false;
+      this.isUser = x.role === '2' ? true : false;
+    });
   }
 
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 
   logout() {
     this.authService.logout();
-    this.isLoggedIn = false;
-    this.isAdmin = false;
   }
 }

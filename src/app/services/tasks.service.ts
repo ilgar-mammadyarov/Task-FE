@@ -10,11 +10,10 @@ export class TasksService {
   }
 
   getTasks() {
-    return tasks.filter(task => task.createdBy === this.user[0].id);
+    return tasks.filter(task => task.createdBy === this.user.id);
   }
 
   createTask(taskForm) {
-    tasks.push({id: Date.now().toString(),createdBy: this.user[0].id, ...taskForm});
-    console.log(tasks)
+    tasks.push({id: Date.now().toString(),createdBy: this.user.id, ...taskForm});
   }
 }

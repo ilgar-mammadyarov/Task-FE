@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { TasksService } from 'src/app/services/tasks.service';
 
@@ -14,7 +15,7 @@ export class NewTaskComponent implements OnInit {
 
   form: FormGroup;
   users = [];
-  constructor(private fb: FormBuilder, private tasksService: TasksService, private authService: AuthService) {
+  constructor(private fb: FormBuilder, private tasksService: TasksService, private authService: AuthService, private router: Router) {
     this.form = this.fb.group({
       title: [
         null,
@@ -61,9 +62,9 @@ export class NewTaskComponent implements OnInit {
 
   submit() {
     this.tasksService.createTask(this.form.value);
+    this.router.navigate(['/tasks']);
   }
   getUsersForTasks() {
     this.users = this.authService.getUsers();
-    console.log(this.users);
   }
 }

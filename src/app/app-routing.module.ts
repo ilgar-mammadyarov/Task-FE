@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
+import { UserGuard } from './guards/user.guard';
 
 const routes: Routes = [
   {
@@ -24,12 +25,12 @@ const routes: Routes = [
   },
   {
     path: 'new-task',
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, UserGuard],
     loadChildren: () => import('./pages/new-task/new-task.module').then(m => m.NewTaskModule)
   },
   {
     path: 'tasks',
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, UserGuard],
     loadChildren: () => import('./pages/tasks/tasks.module').then(m => m.TasksModule)
   },
   {

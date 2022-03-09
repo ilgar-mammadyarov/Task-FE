@@ -1,23 +1,44 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { users } from 'db/users';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-  currentUser: any;
-  
+  private currentUserSubject: BehaviorSubject<any>;
+  public currentUser: Observable<any>;
+
   constructor(private router: Router) {
-    this.currentUser = JSON.parse(localStorage.getItem('user'));
+    this.currentUserSubject = new BehaviorSubject<any>(
+      JSON.parse(localStorage.getItem('user'))
+    );
+    this.currentUser = this.currentUserSubject.asObservable();
+  }
+
+  public get currentUserValue(): any {
+    return this.currentUserSubject.value;
+  }
+
+  public get isLoggedIn(): boolean {
+    return this.currentUserValue !== null;
+  }
+
+  public get isAdmin(): boolean {
+    return this.currentUserValue && this.currentUserValue.role === 'admin';
   }
 
   login(loginForm: any) {
-    this.currentUser = users.filter(user => user.email === loginForm.email && user.password === loginForm.password);
-    localStorage.setItem('user', JSON.stringify(this.currentUser));
+    const filteredUser = users.find(
+      (user) =>
+        user.email === loginForm.email && user.password === loginForm.password
+    );
+    localStorage.setItem('user', JSON.stringify(filteredUser));
+    this.currentUserSubject.next(filteredUser);
   }
 
   logout() {
+    this.currentUserSubject.next(null);
     localStorage.removeItem('user');
     this.router.navigate(['/login']);
   }
@@ -25,34 +46,17 @@ export class AuthService {
   register(registerForm: any) {
     users.push(registerForm);
     localStorage.setItem('user', JSON.stringify(registerForm));
-    console.log(users);
   }
 
   // Only ADMIN
   addUser(userForm: any) {
-    this.currentUser = JSON.parse(localStorage.getItem('user'));
-    if (this.currentUser[0].role === 'admin') {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user.role === 'admin') {
       users.push(userForm);
     }
   }
   // Only users created by ADMIN
   getUsers() {
-    return users.filter(user => user.role === '2');
-  }
-
-  isLoggedIn() {
-    this.currentUser = JSON.parse(localStorage.getItem('user'));
-    if (this.currentUser?.length > 0) {
-      return true;
-    }
-    return false;
-  }
-
-  isAdmin() {
-    this.currentUser = JSON.parse(localStorage.getItem('user'));
-    if (this.currentUser && this.currentUser[0]?.role === 'admin') {
-      return true;
-    }
-    return false;
+    return users.filter((user) => user.role === '2');
   }
 }
